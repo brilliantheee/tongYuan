@@ -2,38 +2,156 @@
   <div>
     <div style="position: relative; height: 100%">
       <div id="h">
-        <span style="font-size: 35px; color: white">请您选择区域</span>
+        <!-- <span style="font-size: 35px; color: white; margin-bottom: 10px"
+          >请您选择区域</span
+        > -->
 
         <br />
-        区域选择：<select
+        区域选择:<el-select
           name=""
           id="selectID"
+          clearable
+          size="mini"
+          class="select_box"
+          placeholder="请选择区域"
           v-model="selectedMenu"
           @change="change($event)"
         >
-          <option
+          <el-option
             v-for="option in menuOptions"
             :value="option.value"
             :key="option.id"
             id="opt"
           >
             区域{{ option.text }}
-          </option>
-        </select>
+          </el-option>
+        </el-select>
         经度范围:
-        <input id="lng" type="text" :value="selectedMenu[1]" /> 纬度范围:
-        <input id="lat" type="text" :value="selectedMenu[2]" />
+        <el-input
+          id="lng"
+          size="mini"
+          type="text"
+          class="input_box"
+          placeholder="请输入经度"
+          :value="selectedMenu[1]"
+        />
+        纬度范围:
+        <el-input
+          id="lat"
+          size="mini"
+          type="text"
+          class="input_box"
+          placeholder="请输入纬度"
+          :value="selectedMenu[2]"
+        />
         <br />
+        调制方式:
+        <el-select
+          v-model="M"
+          clearable
+          class="select_box2"
+          placeholder="请选择调制方式"
+          size="mini"
+        >
+          <el-option
+            v-for="item in modulationOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        频段范围:
+        <el-select
+          class="select_box2"
+          v-model="F"
+          clearable
+          size="mini"
+          placeholder="请选择频段范围"
+        >
+          <el-option
+            v-for="item in bandLimitsOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        带宽:
+        <el-select
+          v-model="B"
+          clearable
+          size="mini"
+          class="select_box2"
+          :disabled="F === '' || F === null"
+          placeholder="请选择带宽"
+        >
+          <el-option
+            v-for="item in bandwidthOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        载频:
+        <el-input
+          id="lng"
+          size="mini"
+          type="text"
+          class="input_box"
+          :disabled="F === '' || F === null"
+          placeholder="请输入载频"
+          @input="validateInput"
+          v-model="FC"
+        />
+        <span v-if="firstError" class="errorMsg"
+          >输入范围应在1920-2025之间</span
+        >
+        <span v-if="secoundError" class="errorMsg"
+          >输入范围应在27.5-31之间</span
+        >
+        FFT 点数:
+        <el-select
+          v-model="N"
+          size="mini"
+          class="select_box"
+          clearable
+          placeholder="请选择FFT点数"
+        >
+          <el-option
+            v-for="item in FFTOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        信道:
+        <el-select
+          v-model="C"
+          size="mini"
+          class="select_box"
+          clearable
+          placeholder="请选择信道"
+        >
+          <el-option
+            v-for="item in channelOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
         <div v-if="selectedMenu !== ''">
           <el-radio v-model="radio" label="1">压缩</el-radio>
           <el-radio v-model="radio" label="2">不压缩</el-radio>
           <button
             @click="openStop"
             :class="{ grayedOut: buttonStop }"
-            :disabled="buttonStop"
             v-if="radio !== ''"
           >
-            产生
+            确定
           </button>
           <!-- <button @click="openIndex" style="margin-left: 5px" v-if="buttonStop">
             查询
@@ -49,9 +167,16 @@
       <div id="cesiumContainer" style="height: 100%; width: 100%"></div>
       <div v-if="selectedSatellite" :style="popupStyle" class="satellite-popup">
         <p>卫星名称: {{ selectedSatellite.name }}</p>
-        <p>实时经度: {{ currentLongitude }}</p>
-        <p>实时纬度: {{ currentLatitude }}</p>
-        <p>卫星方向：{{ jiao_du }}</p>
+        <p>时间: {{ local_time }}</p>
+        <!-- <p>实时经度: {{ currentLongitude }}</p>
+        <p>实时纬度: {{ currentLatitude }}</p> -->
+        <p>实时经度: {{ longitudeAndLatitude[0][1] }}</p>
+        <p>实时纬度: {{ longitudeAndLatitude[0][0] }}</p>
+        <p>星历:</p>
+        <p>{{ selectedSatellite.tleLine1 }}</p>
+        <p>{{ selectedSatellite.tleLine2 }}</p>
+        <p>信号方向：{{ direction[0][0] }},{{ direction[0][1] }}</p>
+
         <el-button :disabled="!ys" @click="openIndex">查询</el-button>
       </div>
       <!-- <div id="home">
@@ -76,6 +201,14 @@ export default {
       currentLongitude: null, // 实时经度
       currentLatitude: null, // 实时纬度
       radio: "",
+      M: "1",
+      F: "1",
+      B: "1",
+      N: "1",
+      C: "1",
+      FC: "",
+      firstError: false,
+      secoundError: false,
       buttonStop: false,
       index1: 0,
       index2: 1,
@@ -93,6 +226,29 @@ export default {
         { value: ["6", "110°~120°", "30°~34°"], text: "6" },
         { value: ["7", "110°~120°", "30°~34°"], text: "7" },
       ],
+      modulationOptions: [
+        { value: "1", label: "QPSK" },
+        { value: "2", label: "16QAM" },
+        { value: "3", label: "32QAM" },
+        { value: "4", label: "64QAM" },
+      ],
+      bandLimitsOptions: [
+        { value: "1", label: "1920-2025MHz" },
+        { value: "2", label: "27.5-31GHz" },
+      ],
+      FFTOptions: [
+        { value: "1", label: "128" },
+        { value: "2", label: "256" },
+        { value: "3", label: "512" },
+        { value: "4", label: "1024" },
+        { value: "5", label: "2048" },
+        { value: "6", label: "4096" },
+      ],
+      channelOptions: [
+        { value: "1", label: "瑞丽信道" },
+        { value: "2", label: "莱斯信道" },
+        { value: "3", label: "NTN TDL-C信道" },
+      ],
     };
   },
 
@@ -100,6 +256,8 @@ export default {
     ...mapState({
       satellites: (state) => state.satellites, // 映射 state.data 到 spectrumData
       jiao_du: (state) => state.data["jiaodu"],
+      direction: (state) => state.data["direction"],
+      longitudeAndLatitude: (state) => state.data["location"],
       local_time: (state) => state.data["local_time"],
       quyu: (state) => state.data["quyu"],
     }),
@@ -116,26 +274,70 @@ export default {
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // 添加阴影效果
       };
     },
+    bandwidthOptions() {
+      if (this.F === "1") {
+        this.FC = "";
+        this.firstError = false;
+        this.secoundError = false;
+        return [
+          { value: "1", label: "10MHz" },
+          { value: "2", label: "20MHz" },
+          { value: "3", label: "30MHZ" },
+          { value: "4", label: "40MHz" },
+        ];
+      } else if (this.F === "2") {
+        this.FC = "";
+        this.firstError = false;
+        this.secoundError = false;
+        return [
+          { value: "5", label: "100MHZ" },
+          { value: "6", label: "200MHz" },
+          { value: "7", label: "400MHZ" },
+        ];
+      } else {
+        this.B = "";
+        this.FC = "";
+        this.firstError = false;
+        this.secoundError = false;
+      }
+    },
   },
 
   mounted() {
     // 初始化Cesium Viewer
     this.initCesium();
-    // 加载卫星数据
-    this.loadSatellites();
-    // 设置点击事件监听器
-    this.setClickHandler();
+    // // 加载卫星数据
+    // this.loadSatellites();
+    // // 设置点击事件监听器
+    // this.setClickHandler();
     // 假设接收到的后台数据
-    const backendData = {
-      satelliteId: 2,
-      direction: 180,
-    };
-    // 调用方法高亮对应卫星轨迹并更新视角
-    this.highlightSatellite(backendData.satelliteId, backendData.direction);
+    // const backendData = {
+    //   satelliteId: 2,
+    //   direction: 180,
+    // };
+    // // 调用方法高亮对应卫星轨迹并更新视角
+    // this.highlightSatellite(backendData.satelliteId, backendData.direction);
   },
 
   methods: {
-    ...mapMutations(["updateData"]),
+    validateInput() {
+      let number = parseInt(this.FC);
+      //重置错误信息状态
+      this.firstError = false;
+      this.secoundError = false;
+      if (this.F === "1") {
+        if (number < 1920 || number > 2025) {
+          this.firstError = true;
+          this.secoundError = false;
+        }
+      } else if (this.F === "2") {
+        if (number < 27.5 || number > 31) {
+          this.firstError = false;
+          this.secoundError = true;
+        }
+      }
+    },
+    ...mapMutations(["updateData", "addSatellites"]),
     initCesium() {
       // 配置Cesium资源路径
       Cesium.Ion.defaultAccessToken =
@@ -156,7 +358,6 @@ export default {
 
       // 隐藏版权信息
       this.viewer._cesiumWidget._creditContainer.style.display = "none";
-
       let localDate = new Date();
       localDate.setHours(localDate.getHours() + 8);
       // 设置动画速度和时间范围
@@ -184,7 +385,12 @@ export default {
           satelliteData.tleLine1,
           satelliteData.tleLine2
         );
-        this.calculateAndDrawSatellitePath(satelliteData.id, satrec);
+        this.calculateAndDrawSatellitePath(
+          satelliteData.id,
+          satrec,
+          satelliteData.time,
+          satelliteData.seconds
+        );
       });
     },
 
@@ -192,24 +398,62 @@ export default {
       this.$router.push("/index");
     },
     openStop() {
+      this.validateInput();
+      //判断如果不合法，不提交
+      if (this.firstError || this.secoundError) {
+        return;
+      }
+      let firstEnter = true;
       this.buttonStop = true;
-      const ws = new WebSocket("ws://192.168.14.151:8769");
+      const ws = new WebSocket("ws://192.168.45.151:8769");
       let radios = this.radio;
       this.ys = true;
-      ws.onopen = function () {
+      ws.onopen = () => {
         console.log(radios);
+        let parmas = {
+          M: this.M,
+          F: this.F,
+          B: this.B,
+          N: this.N,
+          C: this.C,
+          A: this.selectedMenu[0],
+          FC: this.FC,
+          CD: true,
+        };
         if (radios == 1) {
-          ws.send("压缩数据");
+          parmas.CD = true;
+          ws.send(JSON.stringify(parmas));
         } else {
-          ws.send("不压缩数据");
+          parmas.CD = false;
+          ws.send(JSON.stringify(parmas));
         }
       };
       ws.onmessage = (event) => {
         //console.log(data);
         let result = JSON.parse(event.data);
         //let result = event.data;
-        // console.log(result, '信息')
+        console.log("result :>> ", result);
         this.updateData(result);
+        if (firstEnter) {
+          //记录卫星
+          this.addSatellites(result);
+          this.updateCesium(result);
+          // 加载卫星数据
+          this.loadSatellites();
+          // 设置点击事件监听器
+          this.setClickHandler();
+          // 假设接收到的后台数据
+          const backendData = {
+            satelliteId: result.ID[0],
+            direction: 180,
+          };
+          // 调用方法高亮对应卫星轨迹并更新视角
+          this.highlightSatellite(
+            backendData.satelliteId,
+            backendData.direction
+          );
+          firstEnter = false;
+        }
       };
       // ws.onmessage = function (event) {
       //   // 处理Python返回的响应
@@ -223,9 +467,37 @@ export default {
         console.log("Connection closed");
       };
     },
-    calculateAndDrawSatellitePath(id, satrec) {
+    updateCesium(result) {
+      let localDate = new Date(result.local_time.replace(" ", "T"));
+
+      localDate.setHours(localDate.getHours() + 8);
+      // 设置动画速度和时间范围
+      const start = Cesium.JulianDate.fromDate(localDate);
+      // const stop = Cesium.JulianDate.addMinutes(
+      //   start,
+      //   120,
+      //   new Cesium.JulianDate()
+      // );
+      const stop = Cesium.JulianDate.addSeconds(
+        start,
+        result.last_time,
+        new Cesium.JulianDate()
+      );
+
+      this.viewer.clock.startTime = start.clone();
+      this.viewer.clock.stopTime = stop.clone();
+      this.viewer.clock.currentTime = start.clone();
+      this.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
+      this.viewer.clock.multiplier = 30;
+      this.viewer.clock.shouldAnimate = true; // 启动时间动画
+      this.viewer.timeline.zoomTo(start, stop);
+    },
+    calculateAndDrawSatellitePath(id, satrec, time,seconds) {
       const positions = [];
-      const now = Cesium.JulianDate.now();
+      // const now = Cesium.JulianDate.now();
+
+      const now = Cesium.JulianDate.fromDate(new Date(time.replace(" ", "T")));
+
       const adjustedTime = Cesium.JulianDate.addHours(
         now,
         8,
@@ -234,8 +506,8 @@ export default {
 
       const positionProperty = new Cesium.SampledPositionProperty();
 
-      for (let i = 0; i <= 120; i++) {
-        const time = Cesium.JulianDate.addMinutes(
+      for (let i = 0; i <= seconds; i++) {
+        const time = Cesium.JulianDate.addSeconds(
           adjustedTime,
           i,
           new Cesium.JulianDate()
@@ -387,6 +659,25 @@ export default {
   height: 100%;
 }
 
+.select_box {
+  width: 160px;
+  margin-bottom: 15px;
+}
+.select_box2 {
+  width: 150px;
+  margin-bottom: 15px;
+}
+.errorMsg {
+  position: absolute;
+  color: red;
+  top: 165px;
+  left: 5px;
+  font-size: 14px;
+}
+.input_box {
+  width: 120px;
+  margin-bottom: 15px;
+}
 .satellite-popup {
   position: absolute;
   width: 300px;

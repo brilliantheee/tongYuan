@@ -52,14 +52,14 @@ export default {
   },
   methods: {
     sendImg() {
-      const ws = new WebSocket("ws://192.168.14.151:8769");
+      const ws = new WebSocket("ws://192.168.45.151:8769");
       ws.onopen = function () {
         // 连接打开后发送指令
         ws.send("重构模型训练");
       };
     },
     sendT() {
-      const ws = new WebSocket("ws://192.168.14.151:8769");
+      const ws = new WebSocket("ws://192.168.45.151:8769");
       ws.onopen = function () {
         // 连接打开后发送指令
         ws.send("态势模型训练");
