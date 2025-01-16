@@ -1,7 +1,9 @@
 <template>
   <div class="d-flex justify-content-center align-items-center login-container">
     <div class="title-top">
-      <span class="title-top-text">频谱感知演示示范系统</span>
+      <span class="title-top-text"
+        >面向云网融合原型验证系统的频谱感知演示示范系统</span
+      >
     </div>
     <form class="login-form text-center" @submit.prevent="handleSubmit">
       <div style="margin-bottom: 10px">
@@ -269,6 +271,9 @@ export default {
 <style scoped>
 .title-top-text {
   color: #ffffff;
+  border-radius: 10px;
+  background: #564493;
+  padding: 10px;
   font-size: 45px;
 }
 .title-top {
@@ -302,7 +307,9 @@ body {
   height: 100vh;
   width: 100%;
   background: #eee;
-  background-image: url("../../public/bg.png");
+  background-image: url("../../public/bg.jpg");
+  background-size: cover;
+  background-position: center;
 }
 
 .login-form {
