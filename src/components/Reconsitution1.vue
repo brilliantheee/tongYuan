@@ -19,9 +19,9 @@
           实际值:
           <p>{{ point == -1 ? actualValue[0] : actualValue[point - 1] }}</p>
         </div> -->
-        <el-button type="primary" style="margin-left: 20px" @click="toMap"
+        <!-- <el-button type="primary" style="margin-left: 20px" @click="toMap"
           >频谱地图</el-button
-        >
+        > -->
         <!-- <div class="echart" id="mychart" :style="myChartStyle"></div> -->
         <div class="ww">
           <div id="mychart" class="echart"></div>

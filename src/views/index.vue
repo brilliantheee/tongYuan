@@ -46,11 +46,14 @@
       </div>
       <div class="realTime">
         <Scatter />
-        <div class="message-box">
-          <div class="message-list" ref="messageList">
-            <!-- 消息列表 -->
-            <div v-for="(message, index) in messages" :key="index" class="message">
-              {{ message }}
+        <div class="message-box1">
+          <div class="message-title">执行进度</div>
+          <div class="message-box">
+            <div class="message-list" ref="messageList">
+              <!-- 消息列表 -->
+              <div v-for="(message, index) in messages" :key="index" class="message">
+                {{ message }}
+              </div>
             </div>
           </div>
         </div>
@@ -108,7 +111,7 @@
     watch: {
 
       logger() {
-          this.simulateWebSocket();
+        this.simulateWebSocket();
       },
 
     },
@@ -131,8 +134,6 @@
       simulateWebSocket() {
         // 模拟接收到的消息
         let newMessage = this.logger;
-        console.log("收到消息:", newMessage);
-
         // 将新消息添加到消息数组的最前面
         this.messages.unshift(newMessage);
 
@@ -313,13 +314,21 @@
   }
 
   .message-box {
-    width: 800px;
-    height: 100px;
+    width: 760px;
+    height: 208px;
     overflow: hidden;
     border: 1px solid #ccc;
     display: flex;
     flex-direction: column;
-    margin-right: 100px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .message-box1 {
+    width: 600px;
+    margin-right: 280px;
+    margin-top: 10px;
   }
 
   .message-list {
@@ -331,15 +340,41 @@
   }
 
   .message {
+    display: flex;
+    align-items: center;
     margin-bottom: 10px;
     padding: 5px;
-    background-color: #e6f7ff;
     border-radius: 5px;
+    background-color: #ffffff !important;
+    border-radius: 8px;
+    border: 1px solid #ddd;
   }
 
   .realTime {
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+
+ 
+
+  .message-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .message-list::-webkit-scrollbar-thumb {
+    background-color: #bdbdbd;
+    border-radius: 4px;
+  }
+
+  .message-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .message-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
   }
 </style>
