@@ -69,26 +69,26 @@ export default {
         // },
       ],
 
-      freTitle: [
-        {
-          title: "是否异常/dBm",
-          prop: "Status",
-          //prop: "peakPower",
-        },
-      ],
-      nottit: [
-        {
-          title: "频段可用/kHz",
-          prop: "Not_exists_signal",
-          //prop: "bandwidth",
-        },
-        // {
+      // freTitle: [
+      //   {
+      //     title: "是否异常/dBm",
+      //     prop: "Status",
+      //     //prop: "peakPower",
+      //   },
+      // ],
+      // nottit: [
+      //   {
+      //     title: "频段可用/kHz",
+      //     prop: "Not_exists_signal",
+      //     //prop: "bandwidth",
+      //   },
+      //   // {
 
-        //   title: "频段不可用/KHz",
-        //   prop: "exists_signal",
-        //   // prop: "centerFrequency",
-        // },
-      ],
+      //   //   title: "频段不可用/KHz",
+      //   //   prop: "exists_signal",
+      //   //   // prop: "centerFrequency",
+      //   // },
+      // ],
 
       tableData: [],
     };

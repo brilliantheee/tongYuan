@@ -72,10 +72,12 @@
     data() {
       return {
         activeName: "forecast",
+        pre1New:'',
         pre1: "",
         pre2: "",
         act1: "",
         act2: "",
+        act1New:'',
         flag: 0,
         messages: [],       // 存储消息列表
         maxMessages: 20,    // 最多保留的消息条数
@@ -168,6 +170,7 @@
         this.flag = this.flag + 1;
         let arr1 = [];
         let arr2 = [];
+
         this.predict_status.forEach((item, index) => {
           if (item == 1) {
             arr1.push(5);
@@ -175,6 +178,7 @@
             arr1.push(6);
           }
         });
+        this.pre1New = arr1.map(() => 5);
 
         this.actual_status.forEach((item, index) => {
           if (item == 1) {
@@ -183,6 +187,7 @@
             arr2.push(6);
           }
         });
+        this.act1New = arr2.map(() => 5);
         if (this.flag > 40) {
           if (this.flag % 2 == 1) {
             this.pre2 = arr1;
@@ -199,6 +204,8 @@
           this.act1 = arr2;
           this.act2 = [];
           this.pre1 = [];
+
+ 
           this.initEcharts();
         }
       },
@@ -224,7 +231,9 @@
       },
       initEcharts() {
         //初始化图表
+        let self = this; 
         const myChart = echarts.init(document.getElementById("mychart"));
+
         // 基本柱状图
         const option = {
           legend: {
@@ -257,14 +266,15 @@
               label: {
                 show: true,
                 formatter: function (data) {
-                  return data.value == 6 ? "无信号" : "有信号";
+                  const signalFlags = self.pre1[data.dataIndex];  // 或者是传入的其他变量
+                  return signalFlags === 6 ? "无信号" : "有信号";
                 },
               },
               // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
               stack: "same",
               // 将处理好的第一份数据传入data
               // 数据格式为[1,2,3,4,....]
-              data: this.pre1,
+              data: this.pre1New,
             },
             {
               // 第二份数据的展示名称，此处为动态根据数据进行设置
@@ -276,50 +286,51 @@
               label: {
                 show: true,
                 formatter: function (data) {
-                  return data.value == 6 ? "无信号" : "有信号";
+                  const signalFlag = self.act1[data.dataIndex];  // 或者是传入的其他变量
+                  return signalFlag === 6 ? "无信号" : "有信号";
                 },
               },
               // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
               stack: "same",
               // 将处理好的第二份数据传入data
-              data: this.act1,
+              data: this.act1New,
             },
-            {
-              // 第二份数据的展示名称，此处为动态根据数据进行设置
-              name: "预测值",
-              // 柱状图
-              type: "bar",
-              bar: 0.2,
-              barWidth: "30%",
-              label: {
-                show: true,
-                formatter: function (data) {
-                  return data.value == 6 ? "无信号" : "有信号";
-                },
-              },
-              // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
-              stack: "hom",
-              // 将处理好的第二份数据传入data
-              data: this.pre2,
-            },
-            {
-              // 第二份数据的展示名称，此处为动态根据数据进行设置
-              name: "实际值",
-              // 柱状图
-              type: "bar",
-              barWidth: "30%",
-              bar: 0.2,
-              label: {
-                show: true,
-                formatter: function (data) {
-                  return data.value == 6 ? "无信号" : "有信号";
-                },
-              },
-              // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
-              stack: "hom",
-              // 将处理好的第二份数据传入data
-              data: this.act2,
-            },
+            // {
+            //   // 第二份数据的展示名称，此处为动态根据数据进行设置
+            //   name: "预测值",
+            //   // 柱状图
+            //   type: "bar",
+            //   bar: 0.2,
+            //   barWidth: "30%",
+            //   label: {
+            //     show: true,
+            //     formatter: function (data) {
+            //       return data.value == 6 ? "无信号" : "有信号";
+            //     },
+            //   },
+            //   // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
+            //   stack: "hom",
+            //   // 将处理好的第二份数据传入data
+            //   data: pre2New,
+            // },
+            // {
+            //   // 第二份数据的展示名称，此处为动态根据数据进行设置
+            //   name: "实际值",
+            //   // 柱状图
+            //   type: "bar",
+            //   barWidth: "30%",
+            //   bar: 0.2,
+            //   label: {
+            //     show: true,
+            //     formatter: function (data) {
+            //       return data.value == 6 ? "无信号" : "有信号";
+            //     },
+            //   },
+            //   // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
+            //   stack: "hom",
+            //   // 将处理好的第二份数据传入data
+            //   data: act1New,
+            // },
           ],
         };
         myChart.setOption(option);
@@ -385,10 +396,8 @@
         this.point = index;
       },
       setShow(item, index, type) {
-        // console.log(item, '**')
         if (type == "blue") {
           if ((index >= 80 && item === 1) || index < 80) {
-            console.log(item, index);
             return "blueTop";
           } else return "blueTop display";
         } else {
