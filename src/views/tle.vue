@@ -6,7 +6,7 @@
           >请您选择区域</span
         > -->
 
-        <br />
+        <!-- <br />
         区域选择:<el-select
           name=""
           id="selectID"
@@ -44,106 +44,110 @@
           placeholder="请输入纬度"
           :value="selectedMenu[2]"
         />
-        <br />
-        调制方式:
-        <el-select
-          v-model="M"
-          clearable
-          class="select_box2"
-          placeholder="请选择调制方式"
-          size="mini"
-        >
-          <el-option
-            v-for="item in modulationOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+        <br /> -->
+        <el-row>
+          <span class="select_content">调制方式:</span>
+          <el-select
+            v-model="M"
+            clearable
+            class="select_box2"
+            placeholder="请选择调制方式"
+            size="mini"
           >
-          </el-option>
-        </el-select>
-        频段范围:
-        <el-select
-          class="select_box2"
-          v-model="F"
-          clearable
-          size="mini"
-          placeholder="请选择频段范围"
-        >
-          <el-option
-            v-for="item in bandLimitsOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            <el-option
+              v-for="item in modulationOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <span class="select_content">频段范围:</span>
+          <el-select
+            class="select_box2"
+            v-model="F"
+            clearable
+            size="mini"
+            placeholder="请选择频段范围"
           >
-          </el-option>
-        </el-select>
-        带宽:
-        <el-select
-          v-model="B"
-          clearable
-          size="mini"
-          class="select_box2"
-          :disabled="F === '' || F === null"
-          placeholder="请选择带宽"
-        >
-          <el-option
-            v-for="item in bandwidthOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            <el-option
+              v-for="item in bandLimitsOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <span class="select_content">带宽:</span>
+          <el-select
+            v-model="B"
+            clearable
+            size="mini"
+            class="select_box2"
+            :disabled="F === '' || F === null"
+            placeholder="请选择带宽"
           >
-          </el-option>
-        </el-select>
-        载频:
-        <el-input
-          id="lng"
-          size="mini"
-          type="text"
-          class="input_box"
-          :disabled="F === '' || F === null"
-          placeholder="请输入载频"
-          @input="validateInput"
-          v-model="FC"
-        />
-        <span v-if="firstError" class="errorMsg"
-          >输入范围应在1920-2025之间</span
-        >
-        <span v-if="secoundError" class="errorMsg"
-          >输入范围应在27.5-31之间</span
-        >
-        FFT 点数:
-        <el-select
-          v-model="N"
-          size="mini"
-          class="select_box"
-          clearable
-          placeholder="请选择FFT点数"
-        >
-          <el-option
-            v-for="item in FFTOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            <el-option
+              v-for="item in bandwidthOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-row>
+        <el-row>
+          <span class="select_content">载频:</span>
+          <el-input
+            id="lng"
+            size="mini"
+            type="text"
+            class="select_box2"
+            :disabled="F === '' || F === null"
+            placeholder="请输入载频"
+            @input="validateInput"
+            v-model="FC"
+          />
+          <span v-if="firstError" class="errorMsg"
+            >输入范围应在{{ 1920 + Bdict[B] }}-{{ 2025 - Bdict[B] }}之间</span
           >
-          </el-option>
-        </el-select>
-        信道:
-        <el-select
-          v-model="C"
-          size="mini"
-          class="select_box"
-          clearable
-          placeholder="请选择信道"
-        >
-          <el-option
-            v-for="item in channelOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+          <span v-if="secoundError" class="errorMsg"
+            >输入范围应在{{ 27.5 + Bdict[B] }}-{{ 31 - Bdict[B] }}之间</span
           >
-          </el-option>
-        </el-select>
-        <div v-if="selectedMenu !== ''">
+          <span class="select_content">FFT 点数:</span>
+          <el-select
+            v-model="N"
+            size="mini"
+            class="select_box2"
+            clearable
+            placeholder="请选择FFT点数"
+          >
+            <el-option
+              v-for="item in FFTOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option> </el-select
+          ><span class="select_content">信道:</span>
+          <el-select
+            v-model="C"
+            size="mini"
+            class="select_box2"
+            clearable
+            placeholder="请选择信道"
+          >
+            <el-option
+              v-for="item in channelOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-row>
+        <!-- <div v-if="selectedMenu !== ''"> -->
+        <div>
           <el-radio v-model="radio" label="1">压缩</el-radio>
           <el-radio v-model="radio" label="2">不压缩</el-radio>
           <button
@@ -216,6 +220,15 @@ export default {
       selectedMenu: "",
       t: "",
       ys: false,
+      Bdict: {
+        1: 10,
+        2: 20,
+        3: 30,
+        4: 40,
+        5: 0.1,
+        6: 0.2,
+        7: 0.4,
+      },
       menuOptions: [
         // 下拉菜单的选项
         { value: ["1", "110°~120°", "30°~34°"], text: "1" },
@@ -492,7 +505,7 @@ export default {
       this.viewer.clock.shouldAnimate = true; // 启动时间动画
       this.viewer.timeline.zoomTo(start, stop);
     },
-    calculateAndDrawSatellitePath(id, satrec, time,seconds) {
+    calculateAndDrawSatellitePath(id, satrec, time, seconds) {
       const positions = [];
       // const now = Cesium.JulianDate.now();
 
@@ -664,14 +677,20 @@ export default {
   margin-bottom: 15px;
 }
 .select_box2 {
-  width: 150px;
+  width: 135px;
   margin-bottom: 15px;
+  margin-right: 5px;
+}
+.select_content {
+  width: 70px;
+  text-align: right;
+  display: inline-block;
 }
 .errorMsg {
   position: absolute;
   color: red;
-  top: 165px;
-  left: 5px;
+  top: 28px;
+  left: 30px;
   font-size: 14px;
 }
 .input_box {
