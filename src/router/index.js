@@ -34,6 +34,11 @@ const routes = [
         path: '/index',
         name: 'Index',
         component: () => import('@/views/index'),
+    },    
+    {
+        path: '/indexNew',
+        name: 'indexNew',
+        component: () => import('@/views/indexNew'),
     },
     {
         path: '/pmap',
