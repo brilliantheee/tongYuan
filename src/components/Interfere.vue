@@ -1,8 +1,8 @@
 <template>
   <div class="fixedHeight">
-    <div class="tabTitle">
+    <!-- <div class="tabTitle">
       <span>异常频段回溯</span>
-    </div>
+    </div> -->
     <el-table :data="tableData" height="330" border class="tabData">
       <el-table-column
         v-for="(item, index) in tabTitle"
