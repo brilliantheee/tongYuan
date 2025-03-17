@@ -11,19 +11,26 @@
     <backgroundCard>
       <!-- 这里是主体内容 -->
       <div class="main-body">
-
+        <div class="abnormalBg">
+          <img :src="yolo_result" alt="" class="img" />
+        </div>
       </div>
     </backgroundCard>
   </div>
 </template>
 <script>
 import backgroundCard from "@/components/backgroundCard/index.vue";
+import { mapState } from "vuex";
 export default {
   components: { backgroundCard },
   data() {
     return {};
   },
-
+  computed: {
+    ...mapState({
+      yolo_result: (state) => state.data["yolo_result"],
+    }),
+  },
   methods: {},
 };
 </script>
@@ -32,7 +39,16 @@ export default {
   height: 100%;
   width: 100%;
 }
-
+.abnormalBg {
+  width: 718px;
+  height: 100%;
+}
+.img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+}
 .container-box > .header {
   .header-warp {
     position: relative;
@@ -78,16 +94,16 @@ export default {
 
     &--with-action {
       cursor: pointer;
-      transition: opacity .3s ease, filter .3s ease;
+      transition: opacity 0.3s ease, filter 0.3s ease;
 
       &:hover {
-        opacity: .8;
+        opacity: 0.8;
 
         filter: brightness(1.2);
       }
 
       &:active {
-        opacity: .6;
+        opacity: 0.6;
 
         filter: brightness(1.4);
       }
@@ -108,7 +124,7 @@ export default {
     width: 45px;
     height: 45px;
 
-    content: ' ';
+    content: " ";
 
     background-image: url(~@/assets/images/containerbox/b4.png);
     background-size: 100% 100%;
@@ -124,7 +140,7 @@ export default {
         height: 12px;
         margin-left: 5px;
 
-        content: '';
+        content: "";
 
         background-image: url(~@/assets/images/containerbox/right-double.png);
         background-size: 100% 100%;

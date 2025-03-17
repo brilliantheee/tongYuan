@@ -94,12 +94,53 @@ export default {
         this.showPage = false;
       }
     },
+    watch: {
+      logger() {
+        this.simulateWebSocket();
+      },
+    },
+    methods: {
+      // 模拟 WebSocket 消息推送
+      simulateWebSocket() {
+        // 模拟接收到的消息
+        let newMessage = this.logger;
+        // 将新消息添加到消息数组的最前面
+        this.messages.unshift(newMessage);
+
+        // 如果消息数量超过最大值，删除最旧的消息
+        if (this.messages.length > this.maxMessages) {
+          this.messages.pop(); // 删除最旧的消息
+        }
+      },
+      showEchart() {
+        this.chartOne = !this.chartOne;
+      },
+      // 处理接收到的新消息
+      receiveMessage(newMessage) {
+        if (this.messages.length >= this.maxMessages) {
+          this.messages.pop(); // 删除最旧的消息
+        }
+        this.messages.unshift(newMessage); // 新消息放到最前面
+        this.scrollToTop(); // 滚动到顶部
+      },
+
+      // 滚动到最新消息
+      scrollToTop() {
+        this.$nextTick(() => {
+          const messageList = this.$refs.messageList;
+          messageList.scrollTop = 0; // 保证滚动条在最上面
+        });
+      },
+
+      ////
+    },
   },
 
   data() {
     return {
       activeIndex: "1",
       showPage: false,
+      maxMessages:20,
     };
   },
 };

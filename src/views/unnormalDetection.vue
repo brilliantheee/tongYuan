@@ -10,16 +10,23 @@
     </div>
     <backgroundCard>
       <!-- 这里是主体内容 -->
-      <div class="main-body"></div>
+      <div class="main-body">
+        <div class="interfereClas">
+          <Interfere />
+        </div>
+      </div>
     </backgroundCard>
   </div>
 </template>
 <script>
 import backgroundCard from "@/components/backgroundCard/index.vue";
+import Interfere from "@/components/Interfere";
 export default {
-  components: { backgroundCard },
+  components: { backgroundCard, Interfere },
   data() {
-    return {};
+    return {
+     
+    };
   },
 
   methods: {},
@@ -29,6 +36,10 @@ export default {
 .container-box {
   height: 100%;
   width: 100%;
+}
+
+.interfereClas{
+  width: 718px;
 }
 
 .container-box > .header {
