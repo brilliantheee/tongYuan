@@ -10,19 +10,125 @@
     </div>
     <backgroundCard>
       <!-- 这里是主体内容 -->
-      <div class="main-body"></div>
+      <div class="main-body">
+
+        <div class="fixedHeight">
+          <el-table :data="tableData" height="330" border class="tabData">
+            <el-table-column
+              v-for="(item, index) in tabTitle"
+              :key="index"
+              :type="index ? '' : 'index'"
+              :label="item.title"
+              :width="item.width || 'auto'"
+              :prop="item.prop"
+            >
+            </el-table-column>
+            <el-table-column
+              v-for="(item, index) in freTitle"
+              :key="index"
+              :prop="item.title"
+              :label="item.title"
+            >
+              <template slot-scope="scope">
+                <div :style="{ color: scope.row.Status == '正常' ? 'black' : 'red' }">
+                  {{ scope.row.Status }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="(item, index) in nottit"
+              :key="index"
+              :label="item.title"
+              :prop="item.prop"
+            >
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
     </backgroundCard>
   </div>
 </template>
 <script>
 import backgroundCard from "@/components/backgroundCard/index.vue";
+import { mapState } from "vuex";
 export default {
   components: { backgroundCard },
   data() {
-    return {};
+    return {
+      tabTitle: [
+        {
+          title: "序号",
+          prop: "",
+          width: 80,
+        },
+        {
+          title: "中心频率/MHz",
+          prop: "centerFrequency",
+        },
+        {
+          title: "带宽/kHz",
+          prop: "bandwidth",
+        },
+        {
+          title: "频段不可用/KHz",
+          prop: "exists_signal",
+        },
+        {
+          title: "峰值功率",
+          prop: "peakpower",
+        },
+      ],
+      tableData: [],
+    };
   },
 
-  methods: {},
+  computed: {
+    ...mapState({
+      bandwidth: (state) => state.data["bandwidth"],
+      //   symbolrates: (state) => state.data["symbolrates"],
+      centerFrequency: (state) => state.data["centerfrequency"],
+      //   peakPower: (state) => state.data["peakpower"],
+      //   constellations: (state) => state.data["constellations"],
+      exists_signal: (state) => state.data["exists_signal"],
+      Not_exists_signal: (state) => state.data["Not_exists_signal"],
+      Status: (state) => state.data["Status"],
+    }),
+  },
+  watch: {
+    exists_signal() {
+      this.ProcessingData();
+    },
+  },
+  methods: {
+    ProcessingData() {
+      let arr = [];
+      this.bandwidth.forEach((item, index) => {
+        arr.push({
+          bandwidth: item,
+          centerFrequency: this.centerFrequency[index],
+          //   peakPower: this.peakPower[index],
+          //   symbolrates: this.symbolrates[index],
+          //   constellations: this.constellations[index],
+          exists_signal:
+            this.exists_signal[index][0] + "~" + this.exists_signal[index][1],
+          Not_exists_signal:
+            this.Not_exists_signal[index][0] +
+            "~" +
+            this.Not_exists_signal[index][1],
+          Status:
+            this.Status[index] == 0
+              ? this.Status[index] == 2
+                ? "宽带干扰"
+                : "窄带干扰"
+              : "正常",
+        });
+      });
+      this.tableData = arr;
+    },
+    getColor(value) {
+      return value == "正常" ? "black" : "red";
+    },
+  },
 };
 </script>
 <style scoped lang="less">
@@ -43,7 +149,7 @@ export default {
     height: 30px;
     margin-left: 30px;
 
-    background-image: url(~@/assets/images/containerbox/b1.png);
+    /* background-image: url(~@/assets/images/containerbox/b1.png); */
     background-repeat: repeat-x;
     background-position: revert;
     background-size: 100% 100%;
@@ -129,5 +235,8 @@ export default {
       }
     }
   }
+}
+.main-body {
+  width: 100%;
 }
 </style>

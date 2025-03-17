@@ -408,7 +408,7 @@ export default {
     },
 
     openIndex() {
-      this.$router.push("/index");
+      this.$router.push("/indexNew");
     },
     openStop() {
       this.validateInput();
@@ -418,7 +418,7 @@ export default {
       }
       let firstEnter = true;
       this.buttonStop = true;
-      const ws = new WebSocket("ws://192.168.45.151:8769");
+      const ws = new WebSocket("ws://192.168.198.151:8769");
       let radios = this.radio;
       this.ys = true;
       ws.onopen = () => {

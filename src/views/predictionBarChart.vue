@@ -43,7 +43,7 @@ export default {
     height: 30px;
     margin-left: 30px;
 
-    background-image: url(~@/assets/images/containerbox/b1.png);
+    /* background-image: url(~@/assets/images/containerbox/b1.png); */
     background-repeat: repeat-x;
     background-position: revert;
     background-size: 100% 100%;
