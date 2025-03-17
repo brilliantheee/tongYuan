@@ -146,6 +146,16 @@
             </el-option>
           </el-select>
         </el-row>
+        <el-row>
+          <span class="select_content">存储路径:</span>
+          <el-input
+            size="mini"
+            type="text"
+            class="select_box2"
+            placeholder="请输入存储路径"
+            v-model="PATH"
+          />
+        </el-row>
         <!-- <div v-if="selectedMenu !== ''"> -->
         <div>
           <el-radio v-model="radio" label="1">压缩</el-radio>
@@ -211,6 +221,7 @@ export default {
       N: "1",
       C: "1",
       FC: "",
+      PATH:"",
       firstError: false,
       secoundError: false,
       buttonStop: false,
@@ -432,8 +443,9 @@ export default {
           A: this.selectedMenu[0],
           FC: this.FC,
           CD: true,
+          PATH:this.PATH
         };
-        if (radios == 1) {
+        if (radios == 1) {c
           parmas.CD = true;
           ws.send(JSON.stringify(parmas));
         } else {
