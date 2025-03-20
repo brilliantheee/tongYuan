@@ -4,7 +4,7 @@
     <div class="header">
       <div class="header-warp">
         <div class="header-title">
-          <span>异常检测</span>
+          <span>干扰类型检测结果</span>
         </div>
       </div>
     </div>

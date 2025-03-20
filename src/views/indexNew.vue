@@ -51,7 +51,7 @@
       <div class="item-wrap item-wrap--typeDetection">
         <typeDetection />
       </div>
-      <!-- 异常检测-->
+      <!-- 干扰类型检测结果-->
       <div class="item-wrap item-wrap--unnormalDetection">
         <unnormalDetection />
       </div>

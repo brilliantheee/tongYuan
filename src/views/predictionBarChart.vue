@@ -29,6 +29,12 @@
           <div class="frequency">
             <div id="mychart" class="echart"></div>
           </div>
+          <div class="actual_text">
+            <span>实际占用情况</span>
+          </div>
+          <div class="predict_text">
+            <span>2秒前预测占用情况</span>
+          </div>
         </div>
       </div>
     </backgroundCard>
@@ -51,7 +57,10 @@ export default {
       act1New: "",
       messages: [], // 存储消息列表
       maxMessages: 20, // 最多保留的消息条数
-      point: [429, 610, 1389, 1521, 431, 609],
+      // 显示6条柱子
+      // point: [429, 610, 1389, 1521, 431, 609],
+      // 显示3条柱子
+      point: [429, 431, 609],
     };
   },
   computed: {
@@ -140,91 +149,103 @@ export default {
       }
     },
     initEcharts() {
-      //初始化图表
       let self = this;
       const myChart = echarts.init(document.getElementById("mychart"));
-
-      // 基本柱状图
+      // 根据数据长度动态设置右侧内边距
+      const rightPadding = this.point.length === 3 ? 20 : 10;
       const option = {
         legend: {
           selectedMode: false,
-          top: "5%", // 将图例放置在顶部
-          left: "center", // 居中对齐
+          top: "5%",
+          left: "center",
+          // 指定图例显示顺序为：实际值、预测值、无信号
+          data: ["实际值", "预测值", "无信号"],
         },
         grid: {
-          left: 0,
-          right: 10,
+          left: 20,
+          right: 0,
           top: 100,
           bottom: 18,
         },
         xAxis: {
           type: "category",
-          data: this.point.map(String),
+          data: this.point.map((_, index) => "频点" + (index + 1)),
+          axisLabel: {
+            formatter: function (value) {
+              // 用富文本样式 "pad" 包裹文本
+              return "{pad|" + value + "}";
+            },
+            rich: {
+              pad: {
+                // 动态设置 padding: [上, 右, 下, 左]
+                padding: [0, rightPadding, 0, 0],
+              },
+            },
+          },
         },
+
         yAxis: {
           show: false,
-
           type: "value",
         },
         series: [
           {
-            // 第一份数据的展示名称，此处为动态根据数据进行设置
-            // 柱状图
-            name: "预测值",
-            type: "bar",
-            bar: 0.2,
-            // 使用上面配置的调色盘
-            barWidth: "30%",
-            label: {
-              show: true,
-              formatter: function (data) {
-                const signalFlags = self.pre1[data.dataIndex]; // 或者是传入的其他变量
-                return signalFlags === 6 ? "无信号" : "有信号";
-              },
-            },
-            // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
-            stack: "same",
-            // 将处理好的第一份数据传入data
-            // 数据格式为[1,2,3,4,....]
-            itemStyle: {
-              color: function (params) {
-                return self.pre1[params.dataIndex] === 6
-                  ? "#e9e6e6"
-                  : "#5470c6"; // 无信号灰色，默认蓝色
-              },
-            },
-            data: this.pre1New,
-          },
-          {
-            // 第二份数据的展示名称，此处为动态根据数据进行设置
             name: "实际值",
-            // 柱状图
             type: "bar",
-            bar: 0.2,
             barWidth: "30%",
             label: {
               show: true,
               formatter: function (data) {
-                const signalFlag = self.act1[data.dataIndex]; // 或者是传入的其他变量
-                return signalFlag === 6 ? "无信号" : "有信号";
+                return self.act1[data.dataIndex] === 6 ? "无信号" : "有信号";
               },
             },
-            // 堆叠效果-两份数据配置同时使用相同的stack属性值即可
             stack: "same",
             itemStyle: {
               color: function (params) {
                 return self.act1[params.dataIndex] === 6
                   ? "#e9e6e6"
-                  : "#91cc75"; // 无信号灰色，默认绿色
+                  : "#91cc75";
               },
             },
-            // 将处理好的第二份数据传入data
             data: this.act1New,
+          },
+          {
+            name: "预测值",
+            type: "bar",
+            barWidth: "30%",
+            label: {
+              show: true,
+              formatter: function (data) {
+                return self.pre1[data.dataIndex] === 6 ? "无信号" : "有信号";
+              },
+            },
+            stack: "same",
+            itemStyle: {
+              color: function (params) {
+                return self.pre1[params.dataIndex] === 6
+                  ? "#e9e6e6"
+                  : "#5470c6";
+              },
+            },
+            data: this.pre1New,
+          },
+          // 将虚拟系列“无信号”放到最后
+          {
+            name: "无信号",
+            type: "bar",
+            data: this.point.map(() => null),
+            itemStyle: {
+              color: "#e9e6e6", // 图例颜色为 #e9e6e6
+            },
+            tooltip: { show: false },
+            silent: true,
+            animation: false,
           },
         ],
       };
+
       myChart.setOption(option);
-      //随着屏幕大小调节图表
+      // 随着屏幕大小调整图表
       window.addEventListener("resize", () => {
         myChart.resize();
       });
@@ -266,6 +287,22 @@ export default {
   max-height: 100%;
   height: 32px;
   border-radius: 4px;
+}
+.actual_text {
+  position: relative;
+  bottom: 628px;
+}
+.actual_text span {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+.predict_text {
+  position: relative;
+  bottom: 460px;
+}
+.predict_text span {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
 }
 .frequency {
   width: 655px;

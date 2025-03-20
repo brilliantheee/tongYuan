@@ -429,7 +429,7 @@ export default {
       }
       let firstEnter = true;
       this.buttonStop = true;
-      const ws = new WebSocket("ws://192.168.198.151:8769");
+      const ws = new WebSocket("ws://192.168.240.151:8769");
       let radios = this.radio;
       this.ys = true;
       ws.onopen = () => {
@@ -445,7 +445,7 @@ export default {
           CD: true,
           PATH:this.PATH
         };
-        if (radios == 1) {c
+        if (radios == 1) {
           parmas.CD = true;
           ws.send(JSON.stringify(parmas));
         } else {
