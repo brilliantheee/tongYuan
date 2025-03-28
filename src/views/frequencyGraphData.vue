@@ -13,7 +13,7 @@
       <div class="main-body">
 
         <div class="fixedHeight">
-          <el-table :data="tableData" height="330" border class="tabData">
+          <el-table :data="tableData" height="290px" border class="tabData">
             <el-table-column
               v-for="(item, index) in tabTitle"
               :key="index"
