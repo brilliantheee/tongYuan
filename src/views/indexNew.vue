@@ -3,8 +3,8 @@
     <div class="topClass">
       <div class="topMemu">
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-          <el-menu-item index="1">信号数据处理</el-menu-item>
-          <el-menu-item index="2">数据提取</el-menu-item>
+          <el-menu-item index="1">数字信号生成、预处理、重构和特征提取</el-menu-item>
+          <el-menu-item index="2">干扰类型检测和态势生成</el-menu-item>
         </el-menu>
 
         <div class="line"></div>
