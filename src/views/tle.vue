@@ -429,7 +429,7 @@ export default {
       }
       let firstEnter = true;
       this.buttonStop = true;
-      const ws = new WebSocket("ws://192.168.240.151:8769");
+      const ws = new WebSocket("ws://192.168.198.151:8769");
       let radios = this.radio;
       this.ys = true;
       ws.onopen = () => {

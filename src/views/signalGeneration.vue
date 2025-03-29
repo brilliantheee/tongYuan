@@ -28,7 +28,8 @@
     computed: {
       ...mapState({
         spectrum: (state) => state.data["spectrumdata"],
-        reconstruction: (state) => state.data["reconstruction_data"]    
+        reconstruction: (state) => state.data["reconstruction_data"],
+        senseResult: (state) => state.data["sense_result"]
       }),
     },
 
@@ -66,6 +67,7 @@
         });
         data = this.dataOne
         mydata = this.myDataOne
+        console.log("ddddddddddddddd", this.senseResult)
         // data = [1, 2, 3, 4, 5, 6, 7, 8]
         // mydata = [-100, -120, -110, -120, -110, -105, -110, -100]
         this.option = {
@@ -135,6 +137,27 @@
               itemStyle: {
                 color: "rgb(255, 70, 131)",
               },
+              markLine: this.senseResult ? {
+                animation: false, 
+                symbol: ['none', 'none'],
+                data: [
+                  {
+                    name: '',
+                    yAxis: -110,
+                    lineStyle: {
+                      color: '#18BE6A',
+                      type: 'solid'
+                    },
+                    label: {
+                      formatter: '',
+                      position: 'insideEndTop',
+                      distance: 5,
+                      padding: [2, 5],
+                      color: '#18BE6A'
+                    }
+                  }
+                ]
+              } : null,
               data: mydata,
             },
           ],
